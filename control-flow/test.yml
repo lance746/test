@@ -1,0 +1,11 @@
+---
+- name: test
+  hosts: localhost
+  become: true
+  tasks:
+  - name: print id
+    command: cat /etc/motd
+    register: output
+
+  - debug:
+     var: output

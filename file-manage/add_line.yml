@@ -1,0 +1,12 @@
+---
+- name: add line
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: add line
+      lineinfile:
+        path: /home/devops/users.txt
+        line: test line
+        state: present
+
+

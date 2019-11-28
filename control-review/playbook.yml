@@ -1,0 +1,52 @@
+---
+- name: Playbook Control Lab
+  hosts: webservers
+  vars_files: vars.yml
+  tasks:
+    #Fail Fast Message
+    - name: Show failed system requirement message
+      fail: 
+        msg: "The {{ inventory_hostname }} did not meet the requirement"
+      when: >
+        ansible_memtotal_mb*1024*1024 < min_ram_megabytes*1000000 or
+        ansible_distribution != "RedHat"
+
+    #Install all Packages
+    - name: Install all Packages
+      package:
+        name: "{{ item  }}"
+        state: present
+      loop: "{{ packages }}"
+
+    #Enable and start services
+    - name: Enable and start service
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop: "{{ services }}"
+
+
+    #Block of config tasks
+    - block:
+        - name: Create SSL cert directory
+          file:
+            path: "{{ ssl_cert_dir }}"
+            state: directory
+
+        - name: copy config files
+          copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+          loop: "{{ web_config_files }}"
+          notify: restart web service
+
+
+            
+            
+        
+    
+    #Configure the firewall
+
+  #Add handlers
+
